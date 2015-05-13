@@ -74,6 +74,7 @@ define(
 
                 if (false === revision.isEmpty()) {
                     this.mergeParameters(content);
+                    this.mergeElements(content);
                 }
 
                 content.setUpdated(false);
@@ -95,6 +96,35 @@ define(
                 }
 
                 return dfd.promise();
+            },
+
+            mergeElements: function (content) {
+                var revision = content.revision,
+                    elements = revision.elements,
+                    isMergeable = false,
+                    key;
+
+                if (content.data !== undefined) {
+                    if (content.data.elements !== undefined) {
+                        isMergeable = true;
+                    }
+                }
+
+                if (undefined !== elements && isMergeable === true) {
+                    if (content.isAContentSet()) {
+                        content.data.elements = elements;
+                    } else {
+                        for (key in elements) {
+                            if (elements.hasOwnProperty(key)) {
+                                if (content.data.elements.hasOwnProperty(key)) {
+                                    content.data.elements[key] = elements[key];
+                                }
+                            }
+                        }
+                    }
+
+                    delete revision.elements;
+                }
             },
 
             /**

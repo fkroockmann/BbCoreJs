@@ -215,7 +215,7 @@ define(
              * If data not exist a request has been send for recieve data
              * @returns {Promise}
              */
-            getData: function (key, async) {
+            getData: function (key, async, force) {
                 var self = this,
                     dfd = jQuery.Deferred(),
                     func = function (data, key) {
@@ -230,7 +230,7 @@ define(
                         return result;
                     };
 
-                if (this.data === undefined) {
+                if (this.data === undefined || force === true) {
                     ContentRepository.findData(this.type, this.uid).done(function (data) {
                         self.data = data;
                         dfd.resolve(func(data, key));
@@ -285,7 +285,13 @@ define(
 
                     var images = html.find('img'),
                         refreshPicture = function (img) {
-                            img.attr('src', img.attr('src') + '?' + new Date().getTime());
+                            var src = img.attr('src');
+
+                            if (src.length === 0) {
+                                src = require('content.manager').defaultPicturePath;
+                            }
+
+                            img.attr('src', src + '?' + new Date().getTime());
                         };
 
                     if (images.length > 0) {

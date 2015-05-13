@@ -40,7 +40,8 @@ define(
             },
 
             getConfig: function (object) {
-                var dfd = jQuery.Deferred(),
+                var self = this,
+                    dfd = jQuery.Deferred(),
                     config,
                     element = this.ContentManager.buildElement({'uid': object.uid, 'type': object.type});
 
@@ -52,7 +53,7 @@ define(
                         'object_name': object.name,
                         'object_uid': object.uid,
                         'object_type': object.type,
-                        'children': element.getChildren()
+                        'children': self.getChildren(element)
                     };
 
                     dfd.resolve(config);
@@ -61,20 +62,20 @@ define(
                 return dfd.promise();
             },
 
-            buildChildren: function (elements) {
+            getChildren: function (content) {
                 var key,
-                    element;
+                    contents = [],
+                    element,
+                    elements = content.data.elements;
 
-                if (elements.length > 0) {
-                    for (key in elements) {
-                        if (elements.hasOwnProperty(key)) {
-                            element = elements[key];
-                            element.definition = this.DefinitionManager.find(element.type);
-                        }
+                for (key in elements) {
+                    if (elements.hasOwnProperty(key)) {
+                        element = elements[key];
+                        contents.push(this.ContentManager.buildElement({'uid': element.uid, 'type': element.type}));
                     }
                 }
 
-                return elements;
+                return contents;
             }
         };
 

@@ -65,11 +65,11 @@ define(['Core', 'Core/Renderer', 'BackBone', 'jquery', 'tb.component/mask/main']
 
                     self.maskManager.mask(form);
 
-                    var oldItem = dropzoneElement.find('.dz-preview:first');
+                    var items = dropzoneElement.find('.dz-preview');
 
-                    if (oldItem.length > 0) {
+                    if (items.length > 1) {
                         if (typeof self.element.value === 'object') {
-                            oldItem.remove();
+                            items.first().remove();
                         }
                     }
                 });
@@ -96,7 +96,7 @@ define(['Core', 'Core/Renderer', 'BackBone', 'jquery', 'tb.component/mask/main']
                         inputPath.text('');
                         inputSrc.text('');
                         inputOriginalName.text('');
-                        input.val('');
+                        input.val('updated');
                     }
                 });
 
@@ -107,8 +107,8 @@ define(['Core', 'Core/Renderer', 'BackBone', 'jquery', 'tb.component/mask/main']
         },
 
         buildValue: function (dropzone, value, element) {
-
             if (typeof value === 'object') {
+
                 var file = {'name': value.name};
 
                 dropzone.options.addedfile.call(dropzone, file);

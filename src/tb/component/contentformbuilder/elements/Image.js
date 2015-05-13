@@ -58,7 +58,7 @@ define(
             populateConfig: function (object, config, dfd) {
                 var element = this.ContentManager.buildElement({'uid': object.uid, 'type': object.type});
 
-                element.getData('elements').done(function (elements) {
+                element.getData('elements', true, true).done(function (elements) {
                     config.label = object.name;
                     config.object_name = object.name;
 

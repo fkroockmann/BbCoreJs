@@ -184,8 +184,6 @@ define(
                                 self.config.onSave = null;
                                 self.config.onValidate = null;
                             });
-
-
                         });
                     });
                 });
