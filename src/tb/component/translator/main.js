@@ -107,9 +107,13 @@ define('tb.component/translator/main', ['component!logger', 'jquery', 'Core'], f
              */
             translate: function (key) {
                 var catalog = this.getCatalog(this.locale),
-                    translation = catalog[key];
+                    translation;
 
-                if (translation === undefined) {
+                if (undefined !== catalog) {
+                    translation = catalog[key];
+                }
+
+                if (undefined === translation) {
                     Logger.notice('The key "' + key + '" has not translation.');
                     translation = key;
                 }
@@ -123,6 +127,10 @@ define('tb.component/translator/main', ['component!logger', 'jquery', 'Core'], f
              * @returns {Object}
              */
             getCatalog: function (locale) {
+                if (undefined === locale) {
+                    return;
+                }
+
                 return this.catalogs[locale];
             },
 
