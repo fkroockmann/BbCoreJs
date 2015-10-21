@@ -192,7 +192,8 @@ module.exports = function (grunt) {
                 src: [
                     'bower_components/components-font-awesome/css/font-awesome.css',
                     'bower_components/datetimepicker/jquery.datetimepicker.css',
-                    'bower_components/dropzone/dist/dropzone.css'
+                    'bower_components/dropzone/dist/dropzone.css',
+                    'bower_components/cropper/dist/cropper.css'
                 ],
                 dest: 'dist/css/vendor.css'
             }
@@ -248,6 +249,7 @@ module.exports = function (grunt) {
                         'lib.jqtree',
                         'datetimepicker',
                         'jssimplepagination',
+                        'cropper',
 
                         'cryptojs.core',
                         'cryptojs.md5'
