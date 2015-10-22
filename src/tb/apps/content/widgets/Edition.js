@@ -101,10 +101,46 @@ define(
                         }
                     }
 
+<<<<<<< Updated upstream
                     self.getElementsConfig(elementArray).done(function () {
                         dfd.resolve(self.buildConfig(arguments));
                     });
                 });
+=======
+                return dfd.promise();
+            },
+
+            preLoadElements: function (elementsArray) {
+                var key,
+                    dfd = jQuery.Deferred(),
+                    object,
+                    uids = [];
+
+                for (key in elementsArray) {
+                    if (elementsArray.hasOwnProperty(key)) {
+                        object = elementsArray[key];
+                        uids.push(object.uid);
+                    }
+                }
+
+                if (uids.length > 0) {
+                    require('content.repository').findByUids(uids).done(function (elements) {
+                        var element,
+                            key2;
+
+                        for (key2 in elements) {
+                            if (elements.hasOwnProperty(key2)) {
+                                element = elements[key2];
+                                ContentManager.buildElement({'type': element.type, 'uid': element.uid, 'elementData': element});
+                            }
+                        }
+
+                        dfd.resolve();
+                    });
+                } else {
+                    dfd.resolve();
+                }
+>>>>>>> Stashed changes
 
                 return dfd.promise();
             },
