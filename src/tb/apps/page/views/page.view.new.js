@@ -67,13 +67,11 @@ define(
                     data.parent_uid = this.parent_uid;
                 }
 
-                if (false === this.fromPage) {
+                if (true === this.fromPage) {
                     nodes = nodeSelectorValidator.compute('move_to', data.move_to, form);
                     if (nodes !== null) {
                         data.parent_uid = nodes[0].pageUid;
                     }
-
-                    delete data.move_to;
                 }
 
                 delete data.move_to;
