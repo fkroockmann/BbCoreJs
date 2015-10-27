@@ -77,6 +77,9 @@ define(
                         if (self.config.doRedirect === true) {
                             jQuery(location).attr('href', '/');
                         }
+                    }).fail(function () {
+                        self.popin.unmask();
+                        self.popin.hide();
                     });
                 },
 
@@ -93,13 +96,15 @@ define(
                  * @returns {Object} PageViewDelete
                  */
                 render: function () {
+                    var html = jQuery(Renderer.render(require('text!page/tpl/page.delete.twig'), {page: this.page}));
+
+                    html.on('click', '.bb-delete-page-validate', jQuery.proxy(this.onDelete, this));
+                    html.on('click', '.bb-delete-page-cancel', jQuery.proxy(this.onCancel, this));
+
                     this.popin.setTitle(require('component!translator').translate('delete_page'));
-                    this.popin.setContent(Renderer.render(require('text!page/tpl/page.delete.twig'), {page: this.page}));
+                    this.popin.setContent(html);
 
                     this.popin.display(this.popin);
-
-                    jQuery('#bb-page-validate').click(jQuery.proxy(this.onDelete, this));
-                    jQuery('#bb-page-cancel').click(jQuery.proxy(this.onCancel, this));
 
                     return this;
                 }
