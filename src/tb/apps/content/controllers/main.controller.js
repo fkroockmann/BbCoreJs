@@ -257,6 +257,11 @@ define(
                     content.getData('elements').done(function (elements) {
                         jQuery.each(elements, function (subContentName) {
                             element = elements[subContentName];
+
+                            if (null === element) {
+                                return true;
+                            }
+
                             if (jQuery.inArray(element.type, self.EDITABLE_ELEMENTS) === -1) {
                                 return true;
                             }
