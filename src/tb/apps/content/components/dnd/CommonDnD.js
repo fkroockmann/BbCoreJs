@@ -21,9 +21,10 @@ define(
     'app.content/components/dnd/CommonDnD',
     [
         'Core',
+        'jquery',
         'jsclass'
     ],
-    function (Core) {
+    function (Core, jQuery) {
 
         'use strict';
 
@@ -54,14 +55,32 @@ define(
             },
 
             onDragEnter: function (event) {
-                if (event.target.getAttribute('dropzone')) {
-                    event.target.classList.add('over');
+                var target = jQuery(event.target),
+                    parent;
+
+                if (target.attr('dropzone') && target.hasClass(this.dropZoneClass)) {
+
+                    parent = target.parents(this.droppableClass + ':first');
+                    if (parent.length > 0) {
+                        parent.addClass('bb-content-container-area');
+                    }
+
+                    target.addClass('over');
                 }
             },
 
             onDragLeave: function (event) {
-                if (event.target.getAttribute('dropzone')) {
-                    event.target.classList.remove('over');
+                var target = jQuery(event.target),
+                    parent;
+
+                if (target.attr('dropzone') && target.hasClass(this.dropZoneClass)) {
+
+                    parent = target.parents(this.droppableClass + ':first');
+                    if (parent.length > 0) {
+                        parent.removeClass('bb-content-container-area');
+                    }
+
+                    target.removeClass('over');
                 }
             },
 

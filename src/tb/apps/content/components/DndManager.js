@@ -199,9 +199,10 @@ define(
                 var key,
                     contentSet,
                     children,
-                    firstChild,
                     config,
-                    div;
+                    dropzoneEl,
+                    parent,
+                    label;
 
                 ContentManager.addDefaultZoneInContentSet(false);
 
@@ -214,38 +215,46 @@ define(
                         if (contentSet.id !== currentContentId && !contentSet.isChildrenOf(currentContentId)) {
 
                             children = contentSet.getNodeChildren();
-                            firstChild = children.first();
+                            parent = contentSet.getParent();
+                            label = (parent !== null) ? (parent.getLabel() + ' > ' + contentSet.getLabel()) : contentSet.getLabel();
 
                             config = {
-                                'type': contentSet.getLabel()
+                                'label': label,
+                                'class': children.length === 0 ? 'without-children' : ''
                             };
 
                             if (contentSet.accept(type)) {
-                                config.class = this.dropZoneClass + ' ' + this.validDropZoneClass;
+                                config.class = config.class + ' ' + this.dropZoneClass + ' ' + this.validDropZoneClass;
                                 config.droppable = "true";
-                                div = Renderer.render(dropZoneTemplate, config);
+                                dropzoneEl = Renderer.render(dropZoneTemplate, config);
                             } else {
-                                config.class = this.dropZoneClass + ' ' + this.forbiddenDropZoneClass;
+                                config.class = config.class + ' ' + this.dropZoneClass + ' ' + this.forbiddenDropZoneClass;
                                 config.droppable = "false";
-                                div = Renderer.render(dropZoneTemplate, config);
+                                dropzoneEl = Renderer.render(dropZoneTemplate, config);
                             }
 
-                            if (firstChild.length > 0) {
-                                if (undefined !== currentContentId) {
-                                    if (firstChild.data(this.idDataAttribute) !== currentContentId) {
-                                        firstChild.before(div);
-                                    }
-                                } else {
-                                    firstChild.before(div);
-                                }
+                            if (children.length > 0) {
+                                this.putDropZoneAroundContentSetChildren(children, dropzoneEl, currentContentId);
                             } else {
-                                contentSet.jQueryObject.prepend(div);
+                                contentSet.jQueryObject.html(dropzoneEl);
                             }
-
-                            this.putDropZoneAroundContentSetChildren(children, div, currentContentId);
                         }
                     }
                 }
+            },
+
+            getAllAttributes: function (element) {
+                var attr = {};
+
+                jQuery(element).each(function () {
+                    jQuery.each(this.attributes, function () {
+                        if (this.specified) {
+                            attr[this.name] = this.value;
+                        }
+                    });
+                });
+
+                return attr;
             },
 
             /**
@@ -257,28 +266,97 @@ define(
             putDropZoneAroundContentSetChildren: function (children, template, currentContentId) {
                 var self = this;
 
-                children.each(function () {
+                children.each(function (index) {
                     var currentTarget = jQuery(this),
-                        next = currentTarget.next('.' + self.contentClass);
+                        wrapper = jQuery('<div></div>'),
+                        parent,
+                        floatCss,
+                        firstTemplate,
+                        secondTemplate;
 
-                    if (undefined !== currentContentId) {
-                        if (currentTarget.data(self.idDataAttribute) !== currentContentId &&
-                                next.data(self.idDataAttribute) !== currentContentId) {
+                    if (!currentContentId || currentTarget.data(self.idDataAttribute) !== currentContentId) {
+                        currentTarget.wrap(wrapper);
+                        parent = currentTarget.parent('div');
+                        floatCss = currentTarget.css('float');
 
-                            currentTarget.after(template);
+                        secondTemplate = jQuery(template);
+                        firstTemplate = jQuery(template);
+
+                        if (floatCss !== 'none') {
+                            secondTemplate.addClass('right');
+                            secondTemplate.html('');
+
+                            if (0 === index) {
+                                firstTemplate.addClass('left');
+                                firstTemplate.html('');
+                            }
                         }
-                    } else {
-                        currentTarget.after(template);
+
+                        parent.append(secondTemplate);
+
+                        if (0 === index) {
+                            parent.prepend(firstTemplate);
+                        }
+
+                        self.changeDndPosition(currentTarget, parent);
                     }
                 });
+            },
+
+            changeDndPosition: function (element, wrapper) {
+                var attributes = this.getAllAttributes(element);
+
+                this.putAttributes(wrapper, attributes);
+                this.removeAttributes(element);
+
+                wrapper.addClass('bb-drop-wrapper');
+                wrapper.css('position', 'relative');
+
+                element.addClass('clearfix');
+                element.addClass('bb-reverted-element');
+            },
+
+            putAttributes: function (element, attributes) {
+                var key;
+
+                for (key in attributes) {
+                    if (attributes.hasOwnProperty(key)) {
+                        element.attr(key, attributes[key]);
+                    }
+                }
+            },
+
+            removeAttributes: function (element) {
+                var attributes = this.getAllAttributes(element),
+                    key;
+
+                for (key in attributes) {
+                    if (attributes.hasOwnProperty(key)) {
+                        element.removeAttr(key);
+                    }
+                }
             },
 
             /**
              * Delete all dropzone
              */
             cleanHTMLZoneForContentset: function () {
-                jQuery('.' + this.dropZoneClass).remove();
-                ContentManager.addDefaultZoneInContentSet(true);
+                var self = this,
+                    wrappers = jQuery('.bb-drop-wrapper');
+
+                jQuery('.' + this.dropZoneClass).not('.without-children').remove();
+
+                wrappers.each(function () {
+                    var wrapper = jQuery(this),
+                        attributes = self.getAllAttributes(wrapper),
+                        element = wrapper.children('.bb-reverted-element');
+
+                    self.putAttributes(element, attributes);
+
+                    element.removeClass('clearfix').removeClass('bb-reverted-element');
+
+                    element.unwrap();
+                });
             },
 
             /**
@@ -287,10 +365,14 @@ define(
              * @returns {Number}
              */
             getPosition: function (zone, parent) {
-                var prevContent = ContentManager.getContentByNode(zone.prev('.' + this.contentClass)),
+                var prevContent = ContentManager.getContentByNode(zone.parent('.' + this.contentClass)),
                     contentSet = ContentManager.getContentByNode(parent),
                     content,
                     pos = 0;
+
+                if (zone.hasClass('left')) {
+                    return pos;
+                }
 
                 if (prevContent !== null) {
                     contentSet.getNodeChildren().each(function () {

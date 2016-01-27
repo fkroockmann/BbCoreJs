@@ -19,6 +19,7 @@
 
 define(
     [
+        'Core/ApplicationManager',
         'content.models.AbstractContent',
         'jquery',
         'content.manager',
@@ -27,7 +28,7 @@ define(
         'component!translator',
         'jsclass'
     ],
-    function (AbstractContent, jQuery) {
+    function (ApplicationManager, AbstractContent, jQuery) {
 
         'use strict';
 
@@ -53,9 +54,8 @@ define(
              */
             append: function (content, position) {
                 var self = this,
-                    done = false,
                     dfd = jQuery.Deferred(),
-                    children = this.getNodeChildren(),
+                    parentContent = content.getParent(),
                     mask = require('component!mask').createMask();
 
                 mask.mask(this.jQueryObject);
@@ -71,54 +71,71 @@ define(
                     return dfd.promise();
                 }
 
-                this.getData('parameters').done(function () {
+                if (parentContent !== null && (this.id !== parentContent.id)) {
+                    parentContent.jQueryObject.find('[data-bb-id="' + content.id + '"]').remove();
 
-                    var renderModeParam = self.getParameters('rendermode'),
-                        renderMode = (renderModeParam !== undefined) ? renderModeParam.value : self.getRendermode();
+                    parentContent.setUpdated(true);
+                }
 
-                    content.getHtml(renderMode).done(function (html) {
+                this.putContentToPosition(content, position);
+                this.setUpdated(true);
 
-                        html = require('content.manager').refreshImages(html);
+                ApplicationManager.invokeService('content.main.save', true).done(function (promise) {
+                    promise.done(function () {
+                        self.refresh().done(function () {
+                            require('content.manager').addDefaultZoneInContentSet(true);
 
-                        if (position !== 'last') {
-                            if (position > 0) {
-                                children.each(function (key) {
-                                    if (key === position) {
-                                        jQuery(this).before(html);
-                                        done = true;
-
-                                        return false;
-                                    }
-                                });
-                            } else {
-                                self.jQueryObject.prepend(html);
-                                done = true;
-                            }
-                        }
-
-                        if (done === false) {
-                            self.jQueryObject.append(html);
-                        }
-
-                        content.jQueryObject.remove();
-                        content.jQueryObject.length = 0;
-
-                        require('content.manager').addDefaultZoneInContentSet(true);
-
-                        self.setUpdated(true);
-
-                        mask.unmask(self.jQueryObject);
-
-                        dfd.resolve();
-                    }).fail(function () {
-                        mask.unmask(self.jQueryObject);
+                            dfd.resolve();
+                        });
                     });
-                }).fail(function () {
-                    mask.unmask(self.jQueryObject);
                 });
 
-
                 return dfd.promise();
+            },
+
+            putContentToPosition: function (content, position) {
+                var children = this.getChildren(),
+                    key,
+                    elements = [],
+                    include = false,
+                    currentPos,
+                    i = 0;
+
+                for (key in children) {
+                    if (children.hasOwnProperty(key)) {
+
+                        if (children[key].id === content.id) {
+                            currentPos = i;
+                        }
+
+                        if (parseInt(position, 10) === parseInt(key, 10)) {
+                            elements[i] = content;
+                            include = true;
+                            i = i + 1;
+                        }
+
+                        elements[i] = children[key];
+
+                        i = i + 1;
+                    }
+                }
+
+                if (currentPos !== undefined) {
+                    delete elements[currentPos];
+                }
+
+                if (!include) {
+                    elements.push(content);
+                }
+
+                children = [];
+                for (key in elements) {
+                    if (elements.hasOwnProperty(key)) {
+                        children.push({'uid': elements[key].uid, 'type': elements[key].type});
+                    }
+                }
+
+                this.revision.setElements(children);
             },
 
             isAllowToAppend: function (uid) {
@@ -167,14 +184,6 @@ define(
             },
 
             /**
-             * Return children of contentSet
-             * @returns {Object}
-             */
-            getNodeChildren: function () {
-                return this.jQueryObject.children(this.contentClass);
-            },
-
-            /**
              * Get children as content
              * @returns {Array}
              */
@@ -182,6 +191,7 @@ define(
                 var self = this,
                     nodeChildren = this.getNodeChildren(),
                     nodeChild,
+                    config,
                     ContentManager = require('content.manager'),
                     objectIdentifier,
                     children = [];
@@ -189,8 +199,10 @@ define(
                 nodeChildren.each(function () {
                     nodeChild = jQuery(this);
                     objectIdentifier = nodeChild.data(self.identifierDataAttribute);
+                    config = ContentManager.retrievalObjectIdentifier(objectIdentifier);
+                    config.jQueryObject = nodeChild;
 
-                    children.push(ContentManager.buildElement(ContentManager.retrievalObjectIdentifier(objectIdentifier)));
+                    children.push(ContentManager.buildElement(config));
                 });
 
                 return children;

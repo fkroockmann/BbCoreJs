@@ -90,15 +90,22 @@ define(
                     div,
                     contentSet,
                     hasChildren,
-                    key;
+                    key,
+                    parent,
+                    config;
 
                 for (key in contentSets) {
                     if (contentSets.hasOwnProperty(key)) {
                         contentSet = contentSets[key];
+                        parent = contentSet.getParent();
                         hasChildren = contentSet.jQueryObject.children().not('.content-actions').length > 0;
+                        config = {
+                            'class': this.dropZoneClass + ' without-children',
+                            'label': (parent !== null) ? (parent.getLabel() + ' > ' + contentSet.getLabel()) : contentSet.getLabel()
+                        };
 
                         if (hasChildren === false) {
-                            div = Renderer.render(dropZoneTemplate, {'class': this.dropZoneClass, 'type': contentSet.getLabel()});
+                            div = Renderer.render(dropZoneTemplate, config);
                             contentSet.jQueryObject.append(div);
                         }
                     }
@@ -162,15 +169,24 @@ define(
              * @returns {Object}
              */
             buildElement: function (config) {
-                var content,
+                var content = null,
                     objectIdentifier = this.buildObjectIdentifier(config.type, config.uid),
-                    element = jQuery('[data-' + this.identifierDataAttribute + '="' + objectIdentifier + '"]'),
+                    element = config.jQueryObject,
                     allowedAttributes = [],
+                    id,
                     key;
 
                 if (objectIdentifier !== undefined) {
 
-                    content = ContentContainer.findByUid(config.uid);
+                    if (element instanceof jQuery) {
+                        if (element.data('bb-id')) {
+                            id = element.data('bb-id');
+                        }
+                    }
+
+                    if (id) {
+                        content = ContentContainer.find(id);
+                    }
 
                     if (null === content) {
 
@@ -186,9 +202,6 @@ define(
                         }
 
                         ContentContainer.addContent(content);
-                    } else {
-                        content.jQueryObject = element;
-                        content.populate();
                     }
 
                     if (undefined !== config.elementData) {
@@ -277,10 +290,14 @@ define(
              */
             getContentByNode: function (node) {
                 var identifier = node.data(this.identifierDataAttribute),
+                    config,
                     result;
 
                 if (null !== identifier) {
-                    result = this.buildElement(this.retrievalObjectIdentifier(identifier), true);
+                    config = this.retrievalObjectIdentifier(identifier);
+                    config.jQueryObject = node;
+
+                    result = this.buildElement(config, true);
                 }
 
                 return result;

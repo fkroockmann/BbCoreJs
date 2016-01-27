@@ -114,7 +114,7 @@ define(
                     li = target.parents('li');
 
                 Core.ApplicationManager.invokeService('content.main.getContentManager').done(function (ContentManager) {
-                    var content = ContentManager.buildElement({'uid': li.attr('data-uid'), 'type': li.attr('data-type')});
+                    var content = ContentManager.getContentByNode(li);
 
                     Core.ApplicationManager.invokeService('content.main.getEditionWidget').done(function (Edition) {
                         Edition.show(content);

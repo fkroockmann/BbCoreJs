@@ -10411,76 +10411,61 @@ fieldset[disabled] #bb5-ui .btn-online.active {
 }
 .bb-dropzone {
   color: #737373;
-  padding: 15px;
-  margin-bottom: 15px;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  line-height: 1.2em;
   width: 100%;
   text-align: center;
-  padding: 1em;
-  height: 100px;
-  border: 2px dashed #739900;
+  height: 15px;
+  background-color: #00ff00;
+  margin: 2px 0;
   opacity: 0.5;
   position: relative;
   -webkit-transition: all ease 250ms;
   transition: all ease 250ms;
 }
-.bb-dropzone h4 {
-  margin-top: 0;
-  color: inherit;
-}
-.bb-dropzone .alert-link {
-  font-weight: bold;
-}
-.bb-dropzone > p,
-.bb-dropzone > ul {
-  margin-bottom: 0;
-}
-.bb-dropzone > p + p {
-  margin-top: 5px;
-}
-.bb-dropzone:before {
-  content: "\f0ed";
-  text-align: center;
-  font-size: 50px !important;
-  display: inline-block;
-  font: normal normal normal 14px/1 FontAwesome;
-  font-size: inherit;
-  text-rendering: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 50px;
-  height: 50px;
-  margin: -16.66666667px 0 0 -25px;
-}
-.bb-dropzone:before.pull-left {
-  margin-right: .3em;
-}
-.bb-dropzone:before.pull-right {
-  margin-left: .3em;
-}
 .bb-dropzone.over {
+  height: 100px;
+  background-color: green;
+}
+.bb-dropzone.without-children {
+  padding: 1em;
+  border: 2px dashed #739900;
+  height: 100px;
+}
+.bb-dropzone.without-children.over {
   background-color: rgba(153, 204, 0, 0.1);
   opacity: 1;
 }
-.bb-dropzone.over:before {
+.bb-dropzone.without-children.over:before {
   -webkit-animation: dropzone-over 4s infinite;
   animation: dropzone-over 4s infinite;
 }
+.bb-dropzone.left {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 15px;
+  height: 100%;
+  z-index: 489999;
+  margin: 0;
+}
+.bb-dropzone.left.over {
+  width: 100px;
+}
+.bb-dropzone.right {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 15px;
+  height: 100%;
+  z-index: 489999;
+  margin: 0;
+}
+.bb-dropzone.right.over {
+  width: 100px;
+}
 .bb-dropzone.bb-dropzone-forbidden {
-  border-color: #c9302c;
-}
-.bb-dropzone.bb-dropzone-forbidden.over {
-  background-color: rgba(217, 83, 79, 0.1);
-  cursor: no-drop;
-}
-.bb-dropzone.bb-dropzone-forbidden.over:before {
-  -webkit-animation: none;
-  animation: none;
+  display: none;
 }
 @-webkit-keyframes dropzone-over {
   0%,
@@ -10514,8 +10499,13 @@ fieldset[disabled] #bb5-ui .btn-online.active {
 }
 #bb5-site-wrapper .content-actions {
   position: absolute;
-  top: -38px;
-  right: 0px;
+  top: -44px;
+  right: -2px;
+  background-color: #fff;
+  padding: 6px 2px;
+  border-radius: 4px 4px 0 0;
+  border: 3px solid rgba(227, 76, 38, 0.85);
+  border-bottom-width: 0px;
 }
 #bb5-site-wrapper .bb-content {
   /*clicked block -> orange*/
@@ -10527,7 +10517,9 @@ fieldset[disabled] #bb5-ui .btn-online.active {
 #bb5-site-wrapper .bb-content.bb-content-selected {
   -webkit-box-shadow: 0px 0px 1px 3px rgba(227, 76, 38, 0.85);
   box-shadow: 0px 0px 1px 3px rgba(227, 76, 38, 0.85);
-  margin-top: 44px;
+}
+#bb5-site-wrapper .bb-content.bb-content-container-area {
+  border: 2px dashed grey;
 }
 #bb5-site-wrapper .content-actions {
   z-index: 489999;
@@ -10568,7 +10560,7 @@ fieldset[disabled] #bb5-ui .btn-online.active {
   overflow: auto;
 }
 /* CONTENT */
-.bb-content:not(.bb-content-page-mode) {
+.bb-content.bb-content-edit-mode {
   position: relative;
   min-height: 21px;
   padding-bottom: 15px;
