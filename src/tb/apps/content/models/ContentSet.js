@@ -189,7 +189,7 @@ define(
              */
             getChildren: function () {
                 var self = this,
-                    nodeChildren = this.getNodeChildren(),
+                    nodeChildren = this.jQueryObject.children(),
                     nodeChild,
                     config,
                     ContentManager = require('content.manager'),
@@ -198,11 +198,19 @@ define(
 
                 nodeChildren.each(function () {
                     nodeChild = jQuery(this);
-                    objectIdentifier = nodeChild.data(self.identifierDataAttribute);
-                    config = ContentManager.retrievalObjectIdentifier(objectIdentifier);
-                    config.jQueryObject = nodeChild;
 
-                    children.push(ContentManager.buildElement(config));
+                    if (nodeChild.hasClass('bb-drop-wrapper')) {
+                        nodeChild = nodeChild.children(self.contentClass);
+                    }
+
+                    if (nodeChild.hasClass('bb-content')) {
+
+                        objectIdentifier = nodeChild.data(self.identifierDataAttribute);
+                        config = ContentManager.retrievalObjectIdentifier(objectIdentifier);
+                        config.jQueryObject = nodeChild;
+
+                        children.push(ContentManager.buildElement(config));
+                    }
                 });
 
                 return children;
@@ -214,29 +222,46 @@ define(
              * @returns {Boolean}
              */
             accept: function (accept) {
-                var accepts = this.getAccept(),
-                    key,
-                    result = false;
+                var allAccepts = this.getAccept(),
+                    accepts = [],
+                    key;
 
-                if (accepts.length === 0) {
-                    result = true;
-                } else {                    
-                    for (key in accepts) {
-                        if (accepts.hasOwnProperty(key)) {
-                            if (accepts[key] === accept) {
-                                result = true;
-                                break;
-                            }
+                if (!accept) {
+                    return true;
+                }
 
-                            if (accepts[key] === '!' . accept) {
-                                result = false;
-                                break;
-                            }
+                accept = accept.replace('/', '\\');
+
+                if (allAccepts.length === 0) {
+                    return true;
+                }
+
+                for (key in allAccepts) {
+                    if (allAccepts.hasOwnProperty(key)) {
+
+                        if (allAccepts[key] === '!' + accept) {
+                            return false;
+                        }
+
+                        if ('!' !== allAccepts[key].substring(0, 1)) {
+                            accepts.push(allAccepts[key]);
                         }
                     }
                 }
 
-                return result;
+                if (accepts.length === 0) {
+                    return true;
+                }
+
+                for (key in accepts) {
+                    if (accepts.hasOwnProperty(key)) {
+                        if (accepts[key] === accept) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
             },
 
             /**
@@ -245,6 +270,11 @@ define(
              * @returns {Boolean}
              */
             isChildrenOf: function (contentSetId) {
+
+                if (!(this.jQueryObject instanceof jQuery)) {
+                    return false;
+                }
+
                 var parents = this.jQueryObject.parents('[data-bb-id]'),
                     result = false;
 

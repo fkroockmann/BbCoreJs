@@ -86,10 +86,34 @@ define(
             },
 
             addDefaultZoneInContentSetService: function () {
+                var disable = false,
+                    disableLink = function () {
+                        return disable;
+                    };
+
                 Core.Scope.subscribe('block', function () {
+                    var links = jQuery('#bb5-site-wrapper').find('a');
+
                     ContentManager.addDefaultZoneInContentSet(true);
+                    disable = false;
+                    links.on('click', disableLink);
+
+                    links.each(function () {
+                        var target = jQuery(this).get(0);
+
+                        target.onClickBckp = target.onclick;
+                        target.onclick = null;
+                    });
+
                 }, function () {
+                    var links = jQuery('#bb5-site-wrapper').find('a');
+
+                    disable = true;
                     ContentManager.addDefaultZoneInContentSet(false);
+
+                    links.each(function () {
+                        jQuery(this).get(0).onclick = jQuery(this).get(0).onClickBckp;
+                    });
                 });
 
                 Core.Scope.subscribe('content', function () {

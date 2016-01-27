@@ -112,7 +112,7 @@ define(['jsclass'], function () {
                 if (this.contents.hasOwnProperty(key)) {
                     content = this.contents[key];
                     if (content.isAContentSet()) {
-                        if (content.accept(accept) || accept === undefined) {
+                        if (accept === undefined || content.accept(accept)) {
                             result.push(content);
                         }
                     }

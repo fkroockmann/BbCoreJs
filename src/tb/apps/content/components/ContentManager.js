@@ -118,6 +118,30 @@ define(
                 }
             },
 
+            getAllAttributes: function (node) {
+                var attr = {};
+
+                jQuery(node).each(function () {
+                    jQuery.each(this.attributes, function () {
+                        if (this.specified) {
+                            attr[this.name] = this.value;
+                        }
+                    });
+                });
+
+                return attr;
+            },
+
+            putAttributes: function (node, attributes) {
+                var key;
+
+                for (key in attributes) {
+                    if (attributes.hasOwnProperty(key)) {
+                        node.attr(key, attributes[key]);
+                    }
+                }
+            },
+
             isUsable: function (type) {
                 var contents = Core.config('unclickable_contents:contents'),
                     result = true;

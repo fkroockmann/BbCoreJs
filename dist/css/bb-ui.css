@@ -10670,30 +10670,16 @@ fieldset[disabled] #bb5-ui .btn-online.active {
   -webkit-animation: dropzone-over 4s infinite;
   animation: dropzone-over 4s infinite;
 }
-.bb-dropzone.left {
+.bb-dropzone.vertical {
   position: absolute;
-  left: 0px;
-  top: 0px;
   bottom: 0px;
-  width: 15px;
+  width: 20px;
   height: 100%;
+  top: 0;
   z-index: 489999;
   margin: 0;
 }
-.bb-dropzone.left.over {
-  width: 100px;
-}
-.bb-dropzone.right {
-  position: absolute;
-  right: 0px;
-  top: 0px;
-  bottom: 0px;
-  width: 15px;
-  height: 100%;
-  z-index: 489999;
-  margin: 0;
-}
-.bb-dropzone.right.over {
+.bb-dropzone.vertical.over {
   width: 100px;
 }
 .bb-dropzone.bb-dropzone-forbidden {

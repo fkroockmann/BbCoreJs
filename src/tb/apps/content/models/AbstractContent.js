@@ -310,11 +310,23 @@ define(
             refresh: function () {
                 var self = this,
                     dfd = jQuery.Deferred(),
-                    contentManager = require('content.manager');
+                    contentManager = require('content.manager'),
+                    attributes = null;
+
+                if (this.jQueryObject instanceof jQuery) {
+                    attributes = contentManager.getAllAttributes(this.jQueryObject);
+                }
 
                 ContentRepository.getHtml(this.type, this.uid, this.getRendermode()).done(function (html) {
 
                     html = contentManager.refreshImages(html);
+
+                    if (null !== attributes) {
+                        contentManager.putAttributes(html, attributes);
+                    }
+
+                    html.removeClass('bb-content-container-area');
+                    html.removeClass('bb-content-selected');
 
                     jQuery('[data-' + contentManager.identifierDataAttribute + '="' + contentManager.buildObjectIdentifier(self.type, self.uid) + '"]').replaceWith(html);
                     self.jQueryObject = html;
@@ -398,7 +410,12 @@ define(
              * Get accepted content from DOM first then from definition if empty
              * @returns {Array}
              */
-            getAccept: function() {
+            getAccept: function () {
+
+                if (!(this.jQueryObject instanceof jQuery)) {
+                    return this.getDefinition('accept');
+                }
+
                 var result = this.jQueryObject.attr('data-accept');
 
                 if (!result) {

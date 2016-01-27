@@ -23,6 +23,7 @@ define(
         'Core',
         'jquery',
         'component!notify',
+        'component!translator',
         'content.container',
         'content.manager',
         'resource.repository',
@@ -33,6 +34,7 @@ define(
     function (Core,
               jQuery,
               Notify,
+              Translator,
               ContentContainer,
               ContentManager,
               ResourceRepository,
@@ -133,6 +135,17 @@ define(
                     parentConfig = parentObjectIdentifier;
 
                 parentConfig.jQueryObject = parent;
+
+                if (target.get(0).nodeName === 'IMG') {
+
+                    target.removeClass('bb-dnd');
+                    target.removeAttr('dropzone');
+                    target.css('opacity', '1');
+
+                    Notify.warning(Translator.translate('only_picture_allowed'));
+
+                    return;
+                }
 
                 config.event = event;
 

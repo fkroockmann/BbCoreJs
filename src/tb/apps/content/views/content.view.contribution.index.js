@@ -19,28 +19,18 @@
 
 define(
     [
-        'Core',
         'jquery',
         'text!content/tpl/contribution/index',
         'text!content/tpl/carousel_blocks',
-        'text!content/tpl/block_description',
         'Core/Renderer',
         'content.widget.DialogContentsList',
-        'component!popin',
-        'definition.manager',
-        'component!translator',
         'bootstrap-carousel'
     ],
-    function (Core,
-              jQuery,
+    function (jQuery,
               template,
               carouselBlocksTpl,
-              blockDescriptionTpl,
               Renderer,
-              DialogContentsList,
-              PopinManager,
-              DefinitionManager,
-              translator
+              DialogContentsList
             ) {
 
         'use strict';
@@ -215,30 +205,6 @@ define(
 
                 carousel.html(html);
 
-                carousel.find(this.carouselBlockClass).on('click', jQuery.proxy(this.onBlockClick, this));
-            },
-
-            onBlockClick: function (event) {
-                if (this.descriptionPopin === undefined) {
-                    this.descriptionPopin = PopinManager.createPopIn();
-
-                    this.descriptionPopin.setTitle(translator.translate('block_description'));
-                    this.descriptionPopin.setId('bb-block-description');
-                    Core.ApplicationManager.invokeService('content.main.registerPopin', 'blockDescription', this.descriptionPopin);
-                }
-
-                var target = jQuery(event.currentTarget),
-                    type = target.data('bb-type'),
-                    definition = DefinitionManager.find(type),
-                    block = {
-                        category: definition.properties.name,
-                        description: definition.properties.description,
-                        thumbnail: definition.image
-                    };
-
-                this.descriptionPopin.display();
-
-                this.descriptionPopin.setContent(Renderer.render(blockDescriptionTpl, {'block': block}));
             },
 
             /**
