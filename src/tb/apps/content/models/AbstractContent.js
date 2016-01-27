@@ -50,7 +50,9 @@ define(
 
                 this.populate();
 
-                this.bindEvents();
+                if (config.jQueryObject instanceof jQuery) {
+                    this.bindEvents();
+                }
 
                 this.revision = new ContentRevision(config);
             },
@@ -290,7 +292,9 @@ define(
              * Add properties to the content like bb-content class or id
              */
             populate: function () {
-                this.jQueryObject.attr('data-bb-id', this.id);
+                if (this.jQueryObject instanceof jQuery) {
+                    this.jQueryObject.attr('data-bb-id', this.id);
+                }
             },
 
             /**
@@ -350,10 +354,6 @@ define(
             computeMandatoryConfig: function (config) {
                 var key;
 
-                if (typeof config.jQueryObject !== 'object') {
-                    Core.exception('BadTypeException', 500, 'The jQueryObject must be set');
-                }
-
                 if (typeof config.uid !== 'string') {
                     Core.exception('BadTypeException', 500, 'The uid must be set');
                 }
@@ -399,9 +399,14 @@ define(
              * @returns {Array}
              */
             getParent: function () {
-                var parentNode = this.jQueryObject.parents(this.contentClass + ':first');
 
-                return require('content.manager').getContentByNode(parentNode);
+                if (this.jQueryObject instanceof jQuery) {
+                    var parentNode = this.jQueryObject.parents(this.contentClass + ':first');
+
+                    return require('content.manager').getContentByNode(parentNode);
+                }
+
+                return null;
             },
 
             getRendermode: function () {
@@ -437,6 +442,16 @@ define(
             },
 
             /**
+             * Return children of contentSet
+             * @returns {Object}
+             */
+            getNodeChildren: function () {
+                if (this.jQueryObject instanceof jQuery) {
+                    return this.jQueryObject.children(this.contentClass);
+                }
+            },
+
+            /**
              * Check if the Content has elements
              * @returns {Boolean}
              */
@@ -466,7 +481,9 @@ define(
              * @param {String} className
              */
             addClass: function (className) {
-                this.jQueryObject.addClass(className);
+                if (this.jQueryObject instanceof jQuery) {
+                    this.jQueryObject.addClass(className);
+                }
             },
 
             /**
@@ -474,7 +491,9 @@ define(
              * @param {String} className
              */
             removeClass: function (className) {
-                this.jQueryObject.removeClass(className);
+                if (this.jQueryObject instanceof jQuery) {
+                    this.jQueryObject.removeClass(className);
+                }
             }
         });
 

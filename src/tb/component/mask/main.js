@@ -22,8 +22,9 @@ define(['Core', 'jquery', 'component!translator', 'jsclass'], function (Core, jQ
                 'left': '0',
                 'position': 'absolute',
                 'text-align': 'center',
-                'border': '1px solid bleue',
+                'border': '1px 89999 bleue',
                 'top': '0',
+                'z-index': '489999',
                 'width': '100%'
             });
             jQuery(loader).html('<i class="fa fa-spin fa-spinner"></i>' + this.config.message);

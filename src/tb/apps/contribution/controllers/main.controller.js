@@ -27,7 +27,6 @@ define(['Core', 'contribution.view.index', 'jquery'], function (Core, IndexView,
             if (this.viewIsLoaded !== true) {
 
                 Core.Scope.subscribe('page', function () {
-                    jQuery('.bb-content').addClass('bb-content-page-mode');
 
                     Core.ApplicationManager.invokeService('content.main.getSelectedContent').done(function (content) {
                         if (null !== content) {
@@ -35,9 +34,7 @@ define(['Core', 'contribution.view.index', 'jquery'], function (Core, IndexView,
                         }
                     });
 
-                }, function () {
-                    jQuery('.bb-content').removeClass('bb-content-page-mode');
-                });
+                }, function () { return; });
 
                 this.viewIsLoaded = true;
             } else {

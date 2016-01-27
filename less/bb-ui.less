@@ -2208,38 +2208,73 @@ Version: 2.10 Dec2014
 
 .bb-dropzone {
     @size : 50px;
-    color: lighten(@bb5-txt-clr,25%);
-    #bb5-ui .alert;
     width: 100%;
     text-align: center;
-    padding:1em;
-    height: 100px;
-    border: 2px dashed darken(@brand-success,10%);
+    height: 15px;
+    margin: 2px 0;
     opacity: 0.5;
     position:relative;
     .transition(all ease 250ms);
-    &:before {
-        content:"\f0ed"; text-align: center; font-size: @size!important; #bb5-ui .fa; position:absolute; top:50%; left:50%; width: @size; height: @size; margin: @size/-3 0 0 @size/-2;
-    }
+    background-color: #C5E0BA;
+    color: #3E7539;
+    font-size: 10px;
+    line-height: 15px;
+    border-radius: 4px;
+    padding: 1px 0;
     &.over {
-        background-color: fade(@brand-success,10%);
-        opacity: 1;
-        &:before {
-            -webkit-animation: dropzone-over 4s infinite;
-                animation: dropzone-over 4s infinite;
+        height: 100px;
+        background-color: green;
+        color: black;
+        font-size: 14px;
+        padding: 41px 0;
+    }
+
+    &.without-children {
+        height: 100px;
+        border: 2px dashed darken(@brand-success,10%);
+        height: 100px;
+        margin: 15px 0;
+        padding: 41px 0;
+        &.over {
+            background-color: fade(@brand-success,10%);
+            opacity: 1;
+            &:before {
+                -webkit-animation: dropzone-over 4s infinite;
+                    animation: dropzone-over 4s infinite;
+            }
+        }
+    }
+
+    &.left {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        bottom: 0px;
+        width: 15px;
+        height: 100%;
+        z-index: @bb5-z-index - 1;
+        margin: 0;
+        &.over {
+            width: 100px;
+        }
+    }
+
+    &.right {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        bottom: 0px;
+        width: 15px;
+        height: 100%;
+        z-index: @bb5-z-index - 1;
+        margin: 0;
+        &.over {
+            width: 100px;
         }
     }
 
     &.bb-dropzone-forbidden {
-        border-color: darken(@brand-danger,10%);
-        &.over {
-            background-color:fade(@brand-danger,10%);
-            cursor: no-drop;
-            &:before {
-                -webkit-animation: none;
-                    animation: none;
-            }
-        }
+        display:none;
     }
 }
 @-webkit-keyframes dropzone-over {
@@ -2278,8 +2313,13 @@ Version: 2.10 Dec2014
 
     .content-actions {
         position: absolute;
-        top: -38px;
-        right: 0px;
+        top: -44px;
+        right: -2px;
+        background-color: #fff;
+        padding: 6px 2px;
+        border-radius: 4px 4px 0 0;
+        border: 3px solid fade(@brand-primary, 85%);
+        border-bottom-width: 0px;
     }
 
     .bb-content {
@@ -2290,8 +2330,10 @@ Version: 2.10 Dec2014
         &.bb-content-selected {
             -webkit-box-shadow:0px 0px 1px 3px fade(@brand-primary, 85%);
                 box-shadow:0px 0px 1px 3px fade(@brand-primary, 85%);
-            margin-top: 44px;
         } /*clicked block -> orange*/
+        &.bb-content-container-area {
+            border: 2px dashed grey;
+        }
     }
 
     .content-actions {
@@ -2313,7 +2355,6 @@ Version: 2.10 Dec2014
         }
     }
 }
-
 
 /** Add Fixes */
 @import "fix.less";

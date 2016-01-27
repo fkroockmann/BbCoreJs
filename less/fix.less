@@ -20,7 +20,7 @@
 
 /* CONTENT */
 
-.bb-content:not(.bb-content-page-mode) {
+.bb-content.bb-content-edit-mode {
     position:relative;
     min-height:21px;
     padding-bottom: 15px;
@@ -53,11 +53,10 @@
 }
 
 #bb5-ui .scroll{
-    background: @brand-success;
+    background: #63791F;
     height: 50px;
     width: 100%;
     text-align: center;
-    opacity: 0.2;
     z-index: 999999;
 
     .fa {
@@ -72,7 +71,7 @@
 
     &.scroll-up {
         position: fixed;
-        top: 190px;
+        top: 142px;
     }
 
     &.scroll-down {

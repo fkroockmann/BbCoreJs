@@ -78,11 +78,6 @@ define(
             },
 
             addDefaultZoneInContentSet: function (active) {
-                jQuery('.' + this.dropZoneClass).remove();
-
-                if (active === false) {
-                    return;
-                }
 
                 this.buildContentSet();
 
@@ -90,16 +85,34 @@ define(
                     div,
                     contentSet,
                     hasChildren,
-                    key;
+                    key,
+                    currentZone,
+                    parent,
+                    config;
 
                 for (key in contentSets) {
                     if (contentSets.hasOwnProperty(key)) {
                         contentSet = contentSets[key];
-                        hasChildren = contentSet.jQueryObject.children().not('.content-actions').length > 0;
 
-                        if (hasChildren === false) {
-                            div = Renderer.render(dropZoneTemplate, {'class': this.dropZoneClass, 'type': contentSet.getLabel()});
-                            contentSet.jQueryObject.append(div);
+                        if (contentSet.jQueryObject instanceof jQuery) {
+                            parent = contentSet.getParent();
+                            hasChildren = contentSet.jQueryObject.children().not('.content-actions').not('.' + this.dropZoneClass).length > 0;
+                            currentZone = contentSet.jQueryObject.find('.without-children');
+                            config = {
+                                'class': this.dropZoneClass + ' without-children',
+                                'label': (parent !== null) ? (parent.getLabel() + ' > ' + contentSet.getLabel()) : contentSet.getLabel()
+                            };
+
+                            if (active === false) {
+                                if (currentZone.length > 0) {
+                                    currentZone.remove();
+                                }
+                            } else {
+                                if (hasChildren === false) {
+                                    div = Renderer.render(dropZoneTemplate, config);
+                                    contentSet.jQueryObject.html(div);
+                                }
+                            }
                         }
                     }
                 }
@@ -162,15 +175,24 @@ define(
              * @returns {Object}
              */
             buildElement: function (config) {
-                var content,
+                var content = null,
                     objectIdentifier = this.buildObjectIdentifier(config.type, config.uid),
-                    element = jQuery('[data-' + this.identifierDataAttribute + '="' + objectIdentifier + '"]'),
+                    element = config.jQueryObject,
                     allowedAttributes = [],
+                    id,
                     key;
 
                 if (objectIdentifier !== undefined) {
 
-                    content = ContentContainer.findByUid(config.uid);
+                    if (element instanceof jQuery) {
+                        if (element.data('bb-id')) {
+                            id = element.data('bb-id');
+                        }
+                    }
+
+                    if (id) {
+                        content = ContentContainer.find(id);
+                    }
 
                     if (null === content) {
 
@@ -186,9 +208,6 @@ define(
                         }
 
                         ContentContainer.addContent(content);
-                    } else {
-                        content.jQueryObject = element;
-                        content.populate();
                     }
 
                     if (undefined !== config.elementData) {
@@ -277,10 +296,14 @@ define(
              */
             getContentByNode: function (node) {
                 var identifier = node.data(this.identifierDataAttribute),
+                    config,
                     result;
 
                 if (null !== identifier) {
-                    result = this.buildElement(this.retrievalObjectIdentifier(identifier), true);
+                    config = this.retrievalObjectIdentifier(identifier);
+                    config.jQueryObject = node;
+
+                    result = this.buildElement(config, true);
                 }
 
                 return result;

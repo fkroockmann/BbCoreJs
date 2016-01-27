@@ -128,12 +128,11 @@ define(
                     parentObjectIdentifier = ContentManager.retrievalObjectIdentifier(parent.data(this.manager.identifierDataAttribute)),
                     mask = require('component!mask').createMask(),
                     saveFunc = function () {
-                        ApplicationManager.invokeService('content.main.save', true).done(function (promise) {
-                            promise.done(function () {
-                                mask.unmask(config.parent.jQueryObject);
-                            });
-                        });
-                    };
+                        mask.unmask(config.parent.jQueryObject);
+                    },
+                    parentConfig = parentObjectIdentifier;
+
+                parentConfig.jQueryObject = parent;
 
                 config.event = event;
 

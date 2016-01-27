@@ -72,6 +72,7 @@ define(
 
             getDialog: function () {
                 var dialog = this.popin[this.content.uid] || null;
+
                 return dialog;
             },
 
@@ -261,7 +262,7 @@ define(
                     self.computeData(res, form).done(function () {
                         Core.ApplicationManager.invokeService('content.main.save').done(function (promise) {
                             promise.done(function () {
-                                form.config.content.refresh().done(function () {
+                                form.config.content.getParent().refresh().done(function () {
 
                                     form.config.popinInstance.unmask();
                                     form.config.popinInstance.hide();

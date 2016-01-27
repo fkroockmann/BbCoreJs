@@ -127,7 +127,6 @@ define(
                         data = ContentManager.retrievalObjectIdentifier(identifier);
 
                     if (ContentManager.isUsable(data.type)) {
-
                         Core.Mediator.publish('on:classcontent:mouseenter', event);
 
                         jQuery('.' + this.contentHoverClass).removeClass(this.contentHoverClass);
