@@ -214,17 +214,22 @@ define(
              * @returns {Boolean}
              */
             accept: function (accept) {
-                var accepts = this.getDefinition('accept'),
+                var accepts = this.getAccept(),
                     key,
                     result = false;
 
                 if (accepts.length === 0) {
                     result = true;
-                } else {
+                } else {                    
                     for (key in accepts) {
                         if (accepts.hasOwnProperty(key)) {
                             if (accepts[key] === accept) {
                                 result = true;
+                                break;
+                            }
+
+                            if (accepts[key] === '!' . accept) {
+                                result = false;
                                 break;
                             }
                         }

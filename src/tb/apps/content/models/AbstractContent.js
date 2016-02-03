@@ -395,6 +395,22 @@ define(
             },
 
             /**
+             * Get accepted content from DOM first then from definition if empty
+             * @returns {Array}
+             */
+            getAccept: function() {
+                var result = this.jQueryObject.attr('data-accept');
+
+                if (!result) {
+                    result = this.getDefinition('accept');
+                } else {
+                    result = result.split(',');
+                }
+
+                return result;
+            },
+
+            /**
              * Get Parent as content
              * @returns {Array}
              */
